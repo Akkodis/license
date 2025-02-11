@@ -1,0 +1,227 @@
+openapi: 3.0.1
+info:
+  title: License API
+  description: API to manage the Licenses in the 5GMETA Platform. The License API
+    allows the user to requests the Licenses available for the data on the platform
+    but also to add or modify existing one. It is using MongoDB to store License data.
+  contact:
+    name: 5GMETA
+    url: https://5gmeta-project.eu/"
+    email: 5gmeta@vicomtech.org
+  version: 2.0.0
+servers:
+- url: /license-api
+tags:
+- name: license
+  description: license endpoints
+paths:
+  /license/{license_id}:
+    get:
+      tags:
+      - ""
+      summary: Get license_example information
+      operationId: get_license
+      parameters:
+      - name: license_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 0
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/license'
+        "404":
+          description: License not found
+          content: {}
+        "500":
+          description: Internal Server error
+          content: {}
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    put:
+      tags:
+      - ""
+      summary: Update license information
+      operationId: put_license
+      parameters:
+      - name: license_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 0
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/license-data'
+            example:
+              geolimit: city
+              commercial: profit
+        required: true
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/license'
+              example:
+                _id: 1
+                license:
+                  geolimit: city
+                  commercial: profit
+        "404":
+          description: License not found
+          content: {}
+        "500":
+          description: Internal Server error
+          content: {}
+      x-codegen-request-body-name: payload
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    delete:
+      tags:
+      - ""
+      summary: Delete a specific license
+      operationId: delete_license
+      parameters:
+      - name: license_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 0
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "404":
+          description: License not found
+          content: {}
+        "500":
+          description: Internal Server error
+          content: {}
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /licenses:
+    get:
+      tags:
+      - ""
+      summary: List with all the licenses
+      operationId: get_licenses
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/license-list'
+              example:
+                licenses:
+                - _id: 0
+                  license:
+                    geolimit: city
+                    commercial: profit
+                - _id: 1
+                  license:
+                    geolimit: country
+                    commercial: non-profit
+                total_records: 2
+        "500":
+          description: Internal Server error
+          content: {}
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    post:
+      tags:
+      - ""
+      summary: Create a new license
+      operationId: post_licenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/license'
+        required: true
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/license'
+        "400":
+          description: License already exists
+          content: {}
+        "500":
+          description: Internal Server error
+          content: {}
+      x-codegen-request-body-name: payload
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+components:
+  schemas:
+    license:
+      type: object
+      properties:
+        _id:
+          type: integer
+          description: Unique license identifier
+        license:
+          $ref: '#/components/schemas/license-data'
+      example:
+        license:
+          geolimit: geolimit
+          commercial: commercial
+        _id: 0
+    license-data:
+      required:
+      - commercial
+      - geolimit
+      type: object
+      properties:
+        geolimit:
+          type: string
+          description: "Geolimit: {local, city, country, global}"
+        commercial:
+          type: string
+          description: "Commercial: {profit, non-profit}"
+      example:
+        geolimit: geolimit
+        commercial: commercial
+    license-list:
+      type: object
+      properties:
+        licenses:
+          type: array
+          items:
+            $ref: '#/components/schemas/license'
+        total_records:
+          type: integer
+          description: Total number of Licenses available
+      example:
+        licenses:
+        - license:
+            geolimit: geolimit
+            commercial: commercial
+          _id: 0
+        - license:
+            geolimit: geolimit
+            commercial: commercial
+          _id: 0
+        total_records: 0
+  responses:
+    MaskError:
+      description: When any error occurs on mask
+      content: {}
+    ParseError:
+      description: When a mask can't be parsed
+      content: {}
+

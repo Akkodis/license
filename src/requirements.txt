@@ -1,0 +1,7 @@
+connexion[swagger-ui,flask,uvicorn]
+python_dateutil
+setuptools
+swagger-ui-bundle
+pymongo
+connexion<3.0.0
+uvicorn
